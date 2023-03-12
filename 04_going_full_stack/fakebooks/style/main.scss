@@ -1,0 +1,63 @@
+*
+{
+	box-sizing: border-box;
+}
+
+html, body {
+	margin: 0;
+	font-family: sans-serif;
+	display: grid;
+	grid: 100% / 100%;
+	inline-size: 100%;
+	block-size: 100vh;
+	overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) 
+{
+	body
+	{
+		color: #eee;
+		background-color: #222;
+	}
+	
+	a
+	{
+		color: cornflowerblue;
+	}
+}
+
+nav
+{
+	display: grid;
+	grid-auto-flow: column;
+	justify-content: center;
+	gap: 1em;
+
+	& > a[aria-current="page"]
+	{
+		color: #eee;
+		font-weight: 900;
+		text-decoration: none;
+	}
+}
+
+
+
+
+body 
+{
+	display: grid;
+	grid: 100% / auto 1fr;
+
+	& > nav
+	{
+		grid-auto-flow: row;
+		place-content: start;
+	}
+
+	& > main 
+	{
+		padding: 1em;
+	}
+}

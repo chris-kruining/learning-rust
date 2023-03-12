@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "fakebooks",
+    "fakebooks_macros",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+fakebooks = { path = "./fakebooks" }
+fakebooks_macros = { path = "./fakebooks_macros" }

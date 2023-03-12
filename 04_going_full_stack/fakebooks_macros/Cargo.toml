@@ -1,0 +1,23 @@
+[package]
+name = "fakebooks_macros"
+version = { workspace = true }
+edition = { workspace = true }
+
+[lib]
+name = "fakebooks_macros"
+path = "src/lib.rs"
+proc-macro = true
+
+[dependencies]
+leptos = "0.2"
+leptos_macro = "0.2"
+quote = "*"
+syn = { version = "*", features = ["extra-traits"] }
+proc-macro2 = "*"
+proc-macro-error = "1.0"
+derive-syn-parse = "0.1.5"
+syn-rsx = "0.9.0"
+
+[[test]]
+name="test_macro_describe"
+path="test/lib.test.rs"
