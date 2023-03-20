@@ -1,33 +1,27 @@
 pub mod routes;
 
-use leptos::*;
-use leptos_meta::*;
-use leptos_router::*;
 use crate::app::routes::{
-    dashboards::{
-        *,
-    },
-    accounts::{
-        *,
-    },
+    accounts::*,
+    dashboards::*,
+    expenses::*,
+    reports::*,
     sales::{
-        *,
-        index::{ Index as SalesIndex, IndexProps as SalesIndexProps },
-        subscriptions::{ Subscriptions as SalesSubscriptions, SubscriptionsProps as SalesSubscriptionsProps },
-        invoices::{ 
+        customers::{Customers as SalesCustomers, CustomersProps as SalesCustomersProps},
+        deposits::{Deposits as SalesDeposits, DepositsProps as SalesDepositsProps},
+        index::{Index as SalesIndex, IndexProps as SalesIndexProps},
+        invoices::{
+            from_id::{Invoice as SalesInvoicesInvoice, InvoiceProps as SalesInvoicesInvoiceProps},
             Invoices as SalesInvoices, InvoicesProps as SalesInvoicesProps,
-            from_id::{ Invoice as SalesInvoicesInvoice, InvoiceProps as SalesInvoicesInvoiceProps },
         },
-        customers::{ Customers as SalesCustomers, CustomersProps as SalesCustomersProps },
-        deposits::{ Deposits as SalesDeposits, DepositsProps as SalesDepositsProps },
-    },
-    expenses::{
-        *,
-    },
-    reports::{
+        subscriptions::{
+            Subscriptions as SalesSubscriptions, SubscriptionsProps as SalesSubscriptionsProps,
+        },
         *,
     },
 };
+use leptos::*;
+use leptos_meta::*;
+use leptos_router::*;
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
@@ -37,6 +31,7 @@ pub fn App(cx: Scope) -> impl IntoView {
     view! {
         cx,
 
+        <Meta name="color-scheme" content="light" />
         <Stylesheet id="leptos" href="/pkg/fakebooks.css" />
         <Title text="Welcome to Leptos"/>
 
@@ -47,6 +42,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                 <A href="sales">"Sales"</A>
                 <A href="expenses">"Expenses"</A>
                 <A href="reports">"Reports"</A>
+                <DarkModeToggle />
             </nav>
 
             <main>
@@ -68,5 +64,18 @@ pub fn App(cx: Scope) -> impl IntoView {
                 </Routes>
             </main>
         </Router>
+    }
+}
+
+#[component]
+fn DarkModeToggle(cx: Scope) -> impl IntoView {
+    let (is_dark, set_is_dark) = create_signal(cx, false);
+    let toggle = move |_| set_is_dark.update(|val| *val = !*val);
+
+    view! {
+        cx,
+
+        <p>{is_dark}</p>
+        <button role="button" on:click=toggle>"Toggle"</button>
     }
 }

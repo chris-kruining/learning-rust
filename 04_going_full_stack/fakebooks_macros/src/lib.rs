@@ -27,8 +27,5 @@ struct MacroCall {
 #[proc_macro]
 #[proc_macro_error]
 pub fn kaas(_tokens: TokenStream) -> TokenStream {
-    
-
-    
     "10".parse().unwrap()
 }

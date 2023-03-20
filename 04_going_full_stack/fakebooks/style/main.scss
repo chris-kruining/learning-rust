@@ -13,6 +13,15 @@ html, body {
 	overflow: hidden;
 }
 
+@media (prefers-color-scheme: light)
+{
+	body
+	{
+		color: #333;
+		background-color: #eee;
+	}
+}
+
 @media (prefers-color-scheme: dark) 
 {
 	body
@@ -34,6 +43,10 @@ nav
 	justify-content: center;
 	gap: 1em;
 
+	&.horizontal {
+		grid-auto-flow: row;
+	}
+	
 	& > a[aria-current="page"]
 	{
 		color: #eee;

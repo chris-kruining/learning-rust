@@ -34,26 +34,28 @@ pub fn Invoices(cx: Scope) -> impl IntoView {
         cx,
         <h1>"Invoices!"</h1>
 
-        <nav>
-            <Transition fallback=move || view! { cx, <p>"Loading..."</p> }>
-                { move || {
-                    invoices
-                        .read(cx)
-                        .map(move |invoices| match invoices {
-                            Err(e) => {
-                                vec![view! { cx, <p class="error">"Server Error: " {e.to_string()}</p> }.into_view(cx) ]
-                            }
-                            Ok(invoices) => {
-                                invoices
-                                    .into_iter()
-                                    .map(move |invoice| view! { cx, <A href=move || invoice.id.to_string()>{move || format!("Invoice {}", invoice.id)}</A> }.into_view(cx))
-                                    .collect::<Vec<_>>()
-                            }
-                        })
-                        .unwrap_or_default()
-                } }
-            </Transition>
-        </nav>
+        <main>
+            <nav class="horizontal">
+                <Transition fallback=move || view! { cx, <p>"Loading..."</p> }>
+                    { move || {
+                        invoices
+                            .read(cx)
+                            .map(move |invoices| match invoices {
+                                Err(e) => {
+                                    vec![view! { cx, <p class="error">"Server Error: " {e.to_string()}</p> }.into_view(cx) ]
+                                }
+                                Ok(invoices) => {
+                                    invoices
+                                        .into_iter()
+                                        .map(move |invoice| view! { cx, <A href=move || invoice.id.to_string()>{move || format!("Invoice {}", invoice.id)}</A> }.into_view(cx))
+                                        .collect::<Vec<_>>()
+                                }
+                            })
+                            .unwrap_or_default()
+                    } }
+                </Transition>
+            </nav>
+        </main>
 
         <Outlet />
     }
