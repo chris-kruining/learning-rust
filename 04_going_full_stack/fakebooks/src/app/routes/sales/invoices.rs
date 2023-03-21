@@ -10,7 +10,7 @@ pub struct Invoice {
 }
 
 #[server(GetInvoices, "/api")]
-async fn loader(cx: Scope) -> Result<Vec<Invoice>, ServerFnError> {
+async fn loader(_cx: Scope) -> Result<Vec<Invoice>, ServerFnError> {
     Ok(vec![ 
         Invoice{ id: 1 },
         Invoice{ id: 2 },

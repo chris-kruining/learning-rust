@@ -13,27 +13,54 @@ html, body {
 	overflow: hidden;
 }
 
+:root
+{
+	--dark-fg: #eee;
+	--dark-bg: #333;
+
+	--light-fg: #333;
+	--light-bg: #eee;
+}
+
 @media (prefers-color-scheme: light)
 {
-	body
+	:root
 	{
-		color: #333;
-		background-color: #eee;
+		--fg: var(--light-fg);
+		--bg: var(--light-fg);
 	}
 }
 
 @media (prefers-color-scheme: dark) 
 {
-	body
+	:root
 	{
-		color: #eee;
-		background-color: #222;
+		--fg: var(--dark-fg);
+		--bg: var(--dark-fg);
 	}
-	
-	a
-	{
-		color: cornflowerblue;
-	}
+}
+
+:root:has(head > meta[name="color-scheme"][content="dark"])
+{
+	--fg: var(--dark-fg);
+	--bg: var(--dark-bg);
+}
+
+:root:has(head > meta[name="color-scheme"][content="light"])
+{
+	--fg: var(--light-fg);
+	--bg: var(--light-bg);
+}
+
+body
+{
+	color: var(--fg);
+	background-color: var(--bg);
+}
+
+a
+{
+	color: cornflowerblue;
 }
 
 nav
@@ -49,7 +76,7 @@ nav
 	
 	& > a[aria-current="page"]
 	{
-		color: #eee;
+		color: var(--fg);
 		font-weight: 900;
 		text-decoration: none;
 	}

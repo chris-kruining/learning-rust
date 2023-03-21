@@ -31,7 +31,6 @@ pub fn App(cx: Scope) -> impl IntoView {
     view! {
         cx,
 
-        <Meta name="color-scheme" content="light" />
         <Stylesheet id="leptos" href="/pkg/fakebooks.css" />
         <Title text="Welcome to Leptos"/>
 
@@ -69,13 +68,21 @@ pub fn App(cx: Scope) -> impl IntoView {
 
 #[component]
 fn DarkModeToggle(cx: Scope) -> impl IntoView {
-    let (is_dark, set_is_dark) = create_signal(cx, false);
-    let toggle = move |_| set_is_dark.update(|val| *val = !*val);
+    let (prefers_dark, set_prefers_dark) = create_signal(cx, false);
+    let color_scheme = move || {
+        if prefers_dark() {
+            "dark".to_string()
+        } else {
+            "light".to_string()
+        }
+    };
+    
+    let toggle = move |_| set_prefers_dark.update(|val| *val = !*val);
 
     view! {
         cx,
 
-        <p>{is_dark}</p>
+        <Meta name="color-scheme" content=color_scheme />
         <button role="button" on:click=toggle>"Toggle"</button>
     }
 }
