@@ -106,7 +106,7 @@ body
 		&.invoices
 		{
 			display: grid;
-			grid-auto-flow: column;
+			grid: 100% / auto 1fr;
 
 			& > :is(nav, .invoice)
 			{

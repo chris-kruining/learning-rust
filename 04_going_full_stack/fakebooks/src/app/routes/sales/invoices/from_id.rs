@@ -1,22 +1,49 @@
+use crate::app::routes::sales::invoices::{Currency, Invoice as InvoiceModel, Price, State};
+use http::status::StatusCode;
 use leptos::*;
 use leptos_router::*;
-use crate::app::routes::sales::invoices::Invoice as InvoiceModel;
+use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
 #[server(GetInvoice, "/api")]
-pub async fn get_invoice(_cx: Scope, id: Option<u32>) -> Result<InvoiceModel, ServerFnError> {
-    match id {
-        None => Err(ServerFnError::MissingArg("id".to_string())),
-        Some(id) => {
-            if id > 5 {
-                return Err(ServerFnError::Request(format!("No invoice with id {}", id).to_string()));
-            }
-            
-            Ok(InvoiceModel { id })
+pub async fn get_invoice(id: u32) -> Result<Option<InvoiceModel>, ServerFnError> {
+    if id > 5 {
+        return Ok(None);
+    }
+
+    Ok(Some(InvoiceModel {
+        id,
+        location: "Santa Monica".to_string(),
+        year: 1995,
+        state: State::OverDue,
+        price: Price {
+            value: 10800,
+            currency: Currency::Usd,
         },
+    }))
+}
+
+#[derive(Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+enum InvoiceError {
+    #[error("Invalid invoice id")]
+    InvalidId,
+    #[error("Invoice not found")]
+    NotFound,
+    #[error("Server error.")]
+    ServerError,
+}
+
+impl InvoiceError {
+    pub fn status_code(&self) -> StatusCode {
+        match self {
+            InvoiceError::InvalidId => StatusCode::BAD_REQUEST,
+            InvoiceError::NotFound => StatusCode::NOT_FOUND,
+            InvoiceError::ServerError => StatusCode::INTERNAL_SERVER_ERROR,
+        }
     }
 }
 
-#[derive(Params, PartialEq, Clone, Debug)]
+#[derive(Params, PartialEq, Eq, Copy, Clone, Debug)]
 pub struct InvoiceParams {
     id: u32,
 }
@@ -24,24 +51,75 @@ pub struct InvoiceParams {
 #[component]
 pub fn Invoice(cx: Scope) -> impl IntoView {
     let params = use_params::<InvoiceParams>(cx);
-    let invoice = create_resource(
-        cx,
-        move || params().map(|params| params.id).ok(),
-        move |id| get_invoice(cx, id)
-    );
+    let id = move || {
+        params.with(|q| {
+            q.as_ref()
+                .map(|q| q.id)
+                .map_err(|_| InvoiceError::InvalidId)
+        })
+    };
+
+    let invoice = create_resource(cx, id, |id| async move {
+        match id {
+            Err(e) => Err(e),
+            Ok(id) => get_invoice(id)
+                .await
+                .map(|i| i.ok_or(InvoiceError::NotFound))
+                .map_err(|_| InvoiceError::ServerError)
+                .flatten(),
+        }
+    });
+
+    let invoice_view = move || {
+        invoice.with(cx, |invoice| {
+            invoice.clone().map(|invoice| {
+                view! {
+                    cx,
+
+                    <p>{invoice.id.to_string()}</p>
+                }
+            })
+        })
+    };
 
     view! {
         cx,
+
         <div class="invoice">
-            <h1>
-                <Transition fallback=move || view! { cx, <p>"Loading"</p> }>
-                    {move || match invoice.read(cx) {
-                        None => Some(view! { cx, <p>"Loading"</p> }.into_any()),
-                        Some(Err(e)) => Some(view! { cx, <p>{move || format!("Error {}", e.to_string())}</p> }.into_any()),
-                        Some(Ok(invoice)) => Some(view!{ cx, <p>{move || format!("Single Invoice with id {}", invoice.id)}</p> }.into_any()),
-                    }}
-                </Transition>
-            </h1>
+            <Suspense fallback=move || view! { cx, <p>"Loading"</p> }>
+                <ErrorBoundary fallback=|cx, errors| view!{ cx, <InvoiceErrorTemplate errors=errors /> }>
+                    {invoice_view}
+                </ErrorBoundary>
+            </Suspense>
         </div>
+    }
+}
+
+#[component]
+fn InvoiceErrorTemplate(cx: Scope, errors: RwSignal<Errors>) -> impl IntoView {
+    let errors: Vec<InvoiceError> = errors()
+        .into_iter()
+        .filter_map(|(_, error)| error.downcast_ref::<InvoiceError>().cloned())
+        .collect();
+
+    log!("Errors: {errors:#?}");
+
+    view! {
+        cx,
+
+        <h1>{ if errors.len() > 1 {"Errors"} else {"Error"} }</h1>
+        <For
+            each=move || {errors.clone().into_iter().enumerate()}
+            key=|(index, _)| *index
+            view=move |cx, error| {
+                let code = error.1.status_code().to_string();
+                let error = error.1.to_string();
+                view! {
+                    cx,
+
+                    <div class="error">{code} ": " {error}</div>
+                }
+            }
+        />
     }
 }

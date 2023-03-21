@@ -1,3 +1,5 @@
+#![feature(result_flattening)]
+
 pub mod app;
 
 use cfg_if::cfg_if;
