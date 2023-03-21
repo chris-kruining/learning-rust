@@ -5,10 +5,12 @@ cfg_if! {
         use leptos::*;
         use fakebooks::app::routes::sales::invoices::GetInvoices;
         use fakebooks::app::routes::sales::invoices::from_id::GetInvoice;
+        use fakebooks::app::feature::dark_mode_toggle::ToggleDarkMode;
 
         fn register_server_functions() {
             _ = GetInvoice::register();
             _ = GetInvoices::register();
+            _ = ToggleDarkMode::register();
         }
 
         #[actix_web::main]

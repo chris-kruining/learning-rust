@@ -100,4 +100,19 @@ body
 	{
 		padding: 1em;
 	}
+
+	main
+	{
+		&.invoices
+		{
+			display: grid;
+			grid-auto-flow: column;
+
+			& > :is(nav, .invoice)
+			{
+				border: 1px solid var(--fg);
+				padding: 1em;
+			}
+		}
+	}
 }

@@ -5,8 +5,14 @@ use crate::app::routes::sales::invoices::Invoice as InvoiceModel;
 #[server(GetInvoice, "/api")]
 pub async fn get_invoice(_cx: Scope, id: Option<u32>) -> Result<InvoiceModel, ServerFnError> {
     match id {
-        None => Err(ServerFnError::Args("id".to_string())),
-        Some(id) => Ok(InvoiceModel { id }),
+        None => Err(ServerFnError::MissingArg("id".to_string())),
+        Some(id) => {
+            if id > 5 {
+                return Err(ServerFnError::Request(format!("No invoice with id {}", id).to_string()));
+            }
+            
+            Ok(InvoiceModel { id })
+        },
     }
 }
 

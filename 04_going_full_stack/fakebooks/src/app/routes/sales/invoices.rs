@@ -34,7 +34,7 @@ pub fn Invoices(cx: Scope) -> impl IntoView {
         cx,
         <h1>"Invoices!"</h1>
 
-        <main>
+        <main class="invoices">
             <nav class="horizontal">
                 <Transition fallback=move || view! { cx, <p>"Loading..."</p> }>
                     { move || {
@@ -55,8 +55,8 @@ pub fn Invoices(cx: Scope) -> impl IntoView {
                     } }
                 </Transition>
             </nav>
-        </main>
 
-        <Outlet />
+            <Outlet />
+        </main>
     }
 }

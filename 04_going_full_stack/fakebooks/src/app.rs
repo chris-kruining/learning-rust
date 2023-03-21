@@ -1,5 +1,7 @@
 pub mod routes;
+pub mod feature;
 
+use crate::app::feature::dark_mode_toggle::{DarkModeToggle, DarkModeToggleProps};
 use crate::app::routes::{
     accounts::*,
     dashboards::*,
@@ -63,26 +65,5 @@ pub fn App(cx: Scope) -> impl IntoView {
                 </Routes>
             </main>
         </Router>
-    }
-}
-
-#[component]
-fn DarkModeToggle(cx: Scope) -> impl IntoView {
-    let (prefers_dark, set_prefers_dark) = create_signal(cx, false);
-    let color_scheme = move || {
-        if prefers_dark() {
-            "dark".to_string()
-        } else {
-            "light".to_string()
-        }
-    };
-    
-    let toggle = move |_| set_prefers_dark.update(|val| *val = !*val);
-
-    view! {
-        cx,
-
-        <Meta name="color-scheme" content=color_scheme />
-        <button role="button" on:click=toggle>"Toggle"</button>
     }
 }
