@@ -20,6 +20,20 @@ pub enum Currency {
     Jpy,
 }
 
+impl fmt::Display for Currency {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Currency::Eur => "€",
+                Currency::Usd => "$",
+                Currency::Jpy => "¥",
+            }
+        )
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Price {
     value: isize,
@@ -28,7 +42,7 @@ pub struct Price {
 
 impl fmt::Display for Price {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}{}", self.currency, self.value)
+        write!(f, "{}{}", self.currency, self.value)
     }
 }
 

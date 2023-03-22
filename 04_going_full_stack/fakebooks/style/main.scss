@@ -113,6 +113,46 @@ body
 				border: 1px solid var(--fg);
 				padding: 1em;
 			}
+
+			& > nav > a
+			{
+				display: grid;
+				grid: auto auto / 50% 50%;
+				inline-size: 100%;
+				text-decoration: none;
+				font-weight: 400;
+				color: var(--fg);
+				outline: transparent solid 1px;
+				outline-offset: .5em;
+
+				&:focus-visible
+				{
+					outline-color: var(--fg);
+				}
+
+				& > *
+				{
+					font-weight: inherit;
+				}
+
+				&[aria-current="page"]
+				{
+					font-weight: bold;
+				}
+
+				& > :is(:nth-child(2), :nth-child(4))
+				{
+					justify-self: end;
+				}
+
+				@media (hover)
+				{
+					&:hover
+					{
+						outline-color: var(--fg);
+					}
+				}
+			}
 		}
 	}
 }
