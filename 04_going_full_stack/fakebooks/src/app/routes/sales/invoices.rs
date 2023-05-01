@@ -56,7 +56,7 @@ pub struct Invoice {
 }
 
 #[server(GetInvoices, "/api")]
-async fn loader() -> Result<Vec<Invoice>, ServerFnError> {
+async fn get_invoices() -> Result<Vec<Invoice>, ServerFnError> {
     Ok(vec![
         Invoice {
             id: 1,
@@ -113,7 +113,7 @@ async fn loader() -> Result<Vec<Invoice>, ServerFnError> {
 
 #[component]
 pub fn Invoices(cx: Scope) -> impl IntoView {
-    let invoices = create_resource(cx, move || (), move |_| loader());
+    let invoices = create_resource(cx, move || (), move |_| get_invoices());
 
     view! {
         cx,
@@ -122,11 +122,9 @@ pub fn Invoices(cx: Scope) -> impl IntoView {
         <main class="invoices">
             <nav class="horizontal">
                 <Suspense fallback=move || view! { cx, <p>"Loading..."</p> }>
-                    <ErrorBoundary fallback=|cx, errors| view!{ cx, <p>"Errors"</p> }>{move ||
+                    <ErrorBoundary fallback=|cx, _errors| view!{ cx, <p>"Errors"</p> }>{move ||
                         invoices.with(cx, |invoices| {
                             invoices.clone().map(|invoices| {
-                                log!("invoices: {invoices:#?}");
-
                                 view! {
                                     cx,
 

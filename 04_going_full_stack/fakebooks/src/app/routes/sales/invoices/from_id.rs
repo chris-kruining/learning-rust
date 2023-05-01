@@ -1,8 +1,8 @@
-use crate::app::routes::sales::invoices::{Currency, Invoice as InvoiceModel, Price, State};
-use http::status::StatusCode;
+use crate::app::routes::sales::invoices::Invoice as InvoiceModel;
 use leptos::*;
 use leptos_router::*;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize, Deserialize};
+use http::status::StatusCode;
 use thiserror::Error;
 
 #[server(GetInvoice, "/api")]
@@ -11,16 +11,14 @@ pub async fn get_invoice(id: u32) -> Result<Option<InvoiceModel>, ServerFnError>
         return Ok(None);
     }
 
-    Ok(Some(InvoiceModel {
-        id,
-        location: "Santa Monica".to_string(),
-        year: 1995,
-        state: State::OverDue,
-        price: Price {
-            value: 10800,
-            currency: Currency::Usd,
-        },
-    }))
+    Ok(Some(InvoiceModel { id,   }))
+            location: "Santa Monica".to_string(),
+            year: 1995,
+            state: State::OverDue,
+            price: Price {
+                value: 10800,
+                currency: Currency::Usd,
+            },
 }
 
 #[derive(Error, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -51,13 +49,9 @@ pub struct InvoiceParams {
 #[component]
 pub fn Invoice(cx: Scope) -> impl IntoView {
     let params = use_params::<InvoiceParams>(cx);
-    let id = move || {
-        params.with(|q| {
-            q.as_ref()
-                .map(|q| q.id)
-                .map_err(|_| InvoiceError::InvalidId)
-        })
-    };
+    let id = move || params.with(|q| {
+        q.as_ref().map(|q| q.id).map_err(|_| InvoiceError::InvalidId)
+    });
 
     let invoice = create_resource(cx, id, |id| async move {
         match id {
@@ -101,8 +95,6 @@ fn InvoiceErrorTemplate(cx: Scope, errors: RwSignal<Errors>) -> impl IntoView {
         .into_iter()
         .filter_map(|(_, error)| error.downcast_ref::<InvoiceError>().cloned())
         .collect();
-
-    log!("Errors: {errors:#?}");
 
     view! {
         cx,
